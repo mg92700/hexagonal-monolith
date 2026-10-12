@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>fr.monolith</groupId>
+        <artifactId>hexagonal-monolith</artifactId>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>app</artifactId>
+    <name>app</name>
+    <description>
+        Point d'entrée Spring Boot — assemble tous les modules.
+        Contient : main class, configuration Spring Boot, application.yml.
+        Ce module ne doit contenir AUCUNE logique métier.
+    </description>
+
+    <dependencies>
+
+        <!-- Tous les modules assemblés ici -->
+        <dependency>
+            <groupId>fr.monolith</groupId>
+            <artifactId>domain</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>fr.monolith</groupId>
+            <artifactId>application</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>fr.monolith</groupId>
+            <artifactId>infra-persistence</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>fr.monolith</groupId>
+            <artifactId>infra-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>fr.monolith</groupId>
+            <artifactId>infra-stream</artifactId>
+        </dependency>
+
+        <!-- Actuator pour monitoring -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- PostgreSQL driver (runtime prod) -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Plugin Spring Boot : génère le fat JAR exécutable -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

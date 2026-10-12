@@ -1,0 +1,61 @@
+spring:
+  application:
+    name: hexagonal-monolith
+
+  # ── Base de données ──────────────────────────────────────
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hexagonal_db
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update            # Dev : crée les tables. En prod : validate + migrations (Flyway/Liquibase)
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  # ── Kafka (producer uniquement : aucun consumer actif) ───
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+      acks: all
+      retries: 3
+      properties:
+        spring.json.add.type.headers: false
+
+# ── Actuator ─────────────────────────────────────────────
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# ── OpenAPI / Swagger ────────────────────────────────────
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+
+# ── Logging ──────────────────────────────────────────────
+logging:
+  level:
+    fr.monolith: DEBUG
+    org.springframework.kafka: INFO
+    org.hibernate.SQL: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

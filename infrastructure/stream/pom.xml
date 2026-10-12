@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>fr.monolith</groupId>
+        <artifactId>hexagonal-monolith</artifactId>
+        <version>${revision}</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>infra-stream</artifactId>
+    <name>infra-stream</name>
+    <description>
+        Adaptateur messaging Kafka (port sortant événements).
+        Contient : producers Kafka (port outbound), events, mappers événements.
+        Pour ajouter RabbitMQ → créer infra-rabbit.
+    </description>
+
+    <dependencies>
+
+        <!-- Domaine (ports outbound + modèle) -->
+        <dependency>
+            <groupId>fr.monolith</groupId>
+            <artifactId>domain</artifactId>
+        </dependency>
+
+        <!-- Spring Kafka (Boot 4 : starter dédié) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-kafka</artifactId>
+        </dependency>
+
+        <!-- MapStruct pour les mappers événements -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>

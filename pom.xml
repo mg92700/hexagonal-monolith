@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ═══════════════════════════════════════════════════════
+         PARENT SPRING BOOT
+    ═══════════════════════════════════════════════════════ -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.1</version>
+        <relativePath/>
+    </parent>
+
+    <!-- ═══════════════════════════════════════════════════════
+         COORDONNÉES DU PROJET
+    ═══════════════════════════════════════════════════════ -->
+    <groupId>fr.monolith</groupId>
+    <artifactId>hexagonal-monolith</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+    <name>hexagonal-monolith</name>
+    <description>Monolith modulable en architecture hexagonale - Spring Boot 4</description>
+
+    <!-- ═══════════════════════════════════════════════════════
+         MODULES
+         Ajouter un nouveau module ici + créer son dossier
+    ═══════════════════════════════════════════════════════ -->
+    <modules>
+        <module>domain</module>
+        <module>application</module>
+        <module>infrastructure/persistence</module>
+        <module>infrastructure/web</module>
+        <module>infrastructure/stream</module>
+        <module>app</module>
+    </modules>
+
+    <!-- ═══════════════════════════════════════════════════════
+         PROPRIÉTÉS GLOBALES
+    ═══════════════════════════════════════════════════════ -->
+    <properties>
+        <!-- Version projet : modifier ici pour tout changer -->
+        <revision>1.0.0-SNAPSHOT</revision>
+
+        <!-- Java -->
+        <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Dépendances tierces (Lombok est géré par le parent Spring Boot) -->
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <springdoc.version>3.1.1</springdoc.version>
+
+        <!-- Tests -->
+        <jacoco.version>0.8.12</jacoco.version>
+        <jacoco.minimum.coverage>0.20</jacoco.minimum.coverage>
+    </properties>
+
+    <!-- ═══════════════════════════════════════════════════════
+         GESTION DES DÉPENDANCES (versions centralisées)
+         Aucun module ne déclare de version, tout est ici
+    ═══════════════════════════════════════════════════════ -->
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- ── Modules internes ────────────────────────── -->
+            <dependency>
+                <groupId>fr.monolith</groupId>
+                <artifactId>domain</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.monolith</groupId>
+                <artifactId>application</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.monolith</groupId>
+                <artifactId>infra-persistence</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.monolith</groupId>
+                <artifactId>infra-web</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.monolith</groupId>
+                <artifactId>infra-stream</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- ── MapStruct ───────────────────────────────── -->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+
+            <!-- ── SpringDoc OpenAPI ───────────────────────── -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- ═══════════════════════════════════════════════════════
+         DÉPENDANCES COMMUNES À TOUS LES MODULES
+    ═══════════════════════════════════════════════════════ -->
+    <dependencies>
+        <!-- Lombok disponible partout -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Tests disponibles partout -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!-- ═══════════════════════════════════════════════════════
+         BUILD PLUGINS
+    ═══════════════════════════════════════════════════════ -->
+    <build>
+        <pluginManagement>
+            <plugins>
+
+                <!-- Compiler : Lombok + MapStruct ensemble -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <release>${java.version}</release>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+                            <path>
+                                <groupId>org.mapstruct</groupId>
+                                <artifactId>mapstruct-processor</artifactId>
+                                <version>${mapstruct.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
+                    </configuration>
+                </plugin>
+
+                <!-- JaCoCo coverage -->
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.version}</version>
+                    <executions>
+                        <execution>
+                            <id>prepare-agent</id>
+                            <goals><goal>prepare-agent</goal></goals>
+                        </execution>
+                        <execution>
+                            <id>report</id>
+                            <phase>verify</phase>
+                            <goals><goal>report</goal></goals>
+                        </execution>
+                        <execution>
+                            <id>check</id>
+                            <phase>verify</phase>
+                            <goals><goal>check</goal></goals>
+                            <configuration>
+                                <excludes>
+                                    <!-- Builders Lombok générés -->
+                                    <exclude>**/*$*Builder.class</exclude>
+                                    <!-- Interfaces (ports) — aucune ligne exécutable -->
+                                    <exclude>**/port/**/*.class</exclude>
+                                    <exclude>**/model/UserStatus.class</exclude>
+                                </excludes>
+                                <rules>
+                                    <rule>
+                                        <element>BUNDLE</element>
+                                        <limits>
+                                            <limit>
+                                                <counter>LINE</counter>
+                                                <value>COVEREDRATIO</value>
+                                                <minimum>${jacoco.minimum.coverage}</minimum>
+                                            </limit>
+                                        </limits>
+                                    </rule>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- Surefire pour JUnit 5 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <includes>
+                            <include>**/*Test.java</include>
+                            <include>**/*Tests.java</include>
+                        </includes>
+                    </configuration>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+
+        <!-- Appliquer JaCoCo à tous les modules -->
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
