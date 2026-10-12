@@ -52,4 +52,4 @@ L'application nécessite PostgreSQL. Kafka n'est contacté qu'à la publication 
 
 ## Sécurité (Spring Security)
 
-Ajout : dépendance infra-security et propriétés pp.security.admin.* (admin initial).
+Ajout : dépendance `infra-security`, propriétés `app.security.admin.*` (admin initial) et `app.security.jwt.*` (secret, durée).
