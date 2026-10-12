@@ -80,6 +80,18 @@ Java 21, Maven 3.9+, Docker.
 docker compose up -d
 ```
 Les ports 5432 (PostgreSQL) et 9092 (Kafka) doivent être libres.
+Arrêter / supprimer la stack :
+```bash
+docker compose stop          # arrête les conteneurs (données conservées)
+docker compose down          # arrête et supprime les conteneurs (données conservées dans le volume)
+docker compose down -v       # supprime aussi le volume postgres_data : TOUTES les données de la base sont perdues
+docker compose down -v --rmi all   # + supprime les images téléchargées
+```
+Pour tout supprimer puis repartir d'une stack neuve :
+```bash
+docker compose down -v && docker compose up -d
+```
+(sous PowerShell : `docker compose down -v; docker compose up -d`)
 
 ### 2. Lancer l'application
 ```bash
