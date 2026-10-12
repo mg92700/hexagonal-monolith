@@ -1,5 +1,6 @@
 package fr.monolith.domain.user.port.inbound;
 
+import fr.monolith.domain.user.model.Role;
 import fr.monolith.domain.user.model.User;
 
 import java.util.List;
@@ -19,12 +20,16 @@ public interface UserUseCase {
     /**
      * Créer un nouvel utilisateur.
      *
-     * @param email     email unique
-     * @param firstName prénom
-     * @param lastName  nom
+     * @param login       login unique (insensible à la casse)
+     * @param rawPassword mot de passe en clair (haché par le use case)
+     * @param role        rôle ; USER si null
+     * @param email       email unique
+     * @param firstName   prénom
+     * @param lastName    nom
      * @return utilisateur créé
      */
-    User createUser(String email, String firstName, String lastName);
+    User createUser(String login, String rawPassword, Role role,
+                    String email, String firstName, String lastName);
 
     /**
      * Récupérer un utilisateur par son identifiant.

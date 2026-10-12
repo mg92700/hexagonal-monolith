@@ -1,5 +1,6 @@
 package fr.monolith.infrastructure.persistence.user.entity;
 
+import fr.monolith.domain.user.model.Role;
 import fr.monolith.domain.user.model.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,7 +21,10 @@ import java.util.UUID;
 @Entity
 @Table(
     name = "users",
-    uniqueConstraints = @UniqueConstraint(columnNames = "email")
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = "email"),
+        @UniqueConstraint(columnNames = "login")
+    }
 )
 @Getter
 @Setter
@@ -32,6 +36,17 @@ public class UserJpaEntity {
     @Id
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
+
+    @Column(name = "login", nullable = false, unique = true, length = 100)
+    private String login;
+
+    /** Hash BCrypt — jamais le mot de passe en clair. */
+    @Column(name = "password", nullable = false, length = 100)
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, length = 20)
+    private Role role;
 
     @Column(name = "email", nullable = false, unique = true, length = 255)
     private String email;

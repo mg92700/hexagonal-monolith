@@ -23,11 +23,22 @@ class ExceptionsTest {
     }
 
     @Test
-    @DisplayName("UserAlreadyExistsException doit exposer l'email")
+    @DisplayName("UserAlreadyExistsException doit exposer le champ et la valeur")
     void shouldExposeEmail() {
-        UserAlreadyExistsException ex = new UserAlreadyExistsException("john@example.com");
+        UserAlreadyExistsException ex = UserAlreadyExistsException.withEmail("john@example.com");
 
-        assertThat(ex.getEmail()).isEqualTo("john@example.com");
+        assertThat(ex.getField()).isEqualTo("email");
+        assertThat(ex.getValue()).isEqualTo("john@example.com");
         assertThat(ex.getMessage()).contains("john@example.com");
+    }
+
+    @Test
+    @DisplayName("UserAlreadyExistsException par login doit exposer le login")
+    void shouldExposeLogin() {
+        UserAlreadyExistsException ex = UserAlreadyExistsException.withLogin("admin");
+
+        assertThat(ex.getField()).isEqualTo("login");
+        assertThat(ex.getValue()).isEqualTo("admin");
+        assertThat(ex.getMessage()).contains("login").contains("admin");
     }
 }

@@ -18,6 +18,7 @@ Chaque module a sa propre documentation (rôle, responsabilités, interdits) :
 | `infrastructure/persistence` | `infra-persistence` | Adaptateur sortant JPA/PostgreSQL | [README](infrastructure/persistence/README.md) |
 | `infrastructure/web` | `infra-web` | Adaptateur entrant REST + Swagger | [README](infrastructure/web/README.md) |
 | `infrastructure/stream` | `infra-stream` | Adaptateur sortant Kafka (events) | [README](infrastructure/stream/README.md) |
+| `infrastructure/security` | `infra-security` | Spring Security : Basic auth, rôles, BCrypt, admin initial | [README](infrastructure/security/README.md) |
 | `app` | `app` | Point d'entrée Spring Boot, configuration | [app/README.md](app/README.md) |
 
 Historique de la migration Spring Boot 4 et du nettoyage : [docs/MIGRATION-SPRING-BOOT-4.md](docs/MIGRATION-SPRING-BOOT-4.md).
@@ -111,6 +112,14 @@ mvn clean verify              # build complet + JaCoCo (couverture minimale : 20
 - **Health** : http://localhost:8080/actuator/health
 - **Kafka UI** : http://localhost:8090
 
+## Sécurité
+
+- Authentification **HTTP Basic** (stateless) sur toute l'API **et sur Swagger** (`/swagger-ui.html`, `/api-docs`) ; bouton « Authorize » dans Swagger UI.
+- `User` possède `login` (unique, insensible à la casse), `password` (hash BCrypt en BDD, jamais renvoyé) et `role` (`USER` par défaut, `ADMIN`).
+- Autorisations : `GET /api/v1/users/**` = tout utilisateur authentifié ; création / activation / désactivation / suppression = `ADMIN` ; `/actuator/health` public, autres endpoints actuator = `ADMIN`.
+- Seuls les comptes au statut `ACTIVE` peuvent se connecter : un nouvel utilisateur est `PENDING` jusqu'à ce qu'un admin appelle `PUT /api/v1/users/{id}/activate`.
+- Au démarrage, un admin `admin` / `admin` est créé s'il n'existe pas (propriétés `app.security.admin.*`, variables `ADMIN_LOGIN`, `ADMIN_PASSWORD`, `ADMIN_EMAIL`). **Changer ce mot de passe en production.**
+- Migration : la table `users` existante n'a pas les colonnes `login`/`password`/`role` (NOT NULL). Repartir d'une base vide (`docker compose down -v` puis `docker compose up -d`) ou vider la table `users`.
 ## Topics Kafka
 
 | Topic | Producteur | Description |

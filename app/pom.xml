@@ -42,6 +42,10 @@
             <groupId>fr.monolith</groupId>
             <artifactId>infra-stream</artifactId>
         </dependency>
+        <dependency>
+            <groupId>fr.monolith</groupId>
+            <artifactId>infra-security</artifactId>
+        </dependency>
 
         <!-- Actuator pour monitoring -->
         <dependency>

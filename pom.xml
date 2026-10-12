@@ -34,6 +34,7 @@
         <module>infrastructure/persistence</module>
         <module>infrastructure/web</module>
         <module>infrastructure/stream</module>
+        <module>infrastructure/security</module>
         <module>app</module>
     </modules>
 
@@ -88,6 +89,11 @@
             <dependency>
                 <groupId>fr.monolith</groupId>
                 <artifactId>infra-stream</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.monolith</groupId>
+                <artifactId>infra-security</artifactId>
                 <version>${revision}</version>
             </dependency>
 

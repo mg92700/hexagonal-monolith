@@ -43,4 +43,14 @@ public interface UserRepository {
      * Vérifier l'existence d'un utilisateur par email, sans tenir compte de la casse.
      */
     boolean existsByEmail(String email);
+
+    /**
+     * Trouver un utilisateur par son login (déjà normalisé en minuscules).
+     */
+    Optional<User> findByLogin(String login);
+
+    /**
+     * Vérifier l'existence d'un login (déjà normalisé en minuscules).
+     */
+    boolean existsByLogin(String login);
 }

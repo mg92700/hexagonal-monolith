@@ -3,8 +3,10 @@ package fr.monolith.application.user;
 import fr.monolith.application.user.service.UserService;
 import fr.monolith.domain.user.exception.UserAlreadyExistsException;
 import fr.monolith.domain.user.exception.UserNotFoundException;
+import fr.monolith.domain.user.model.Role;
 import fr.monolith.domain.user.model.User;
 import fr.monolith.domain.user.model.UserStatus;
+import fr.monolith.domain.user.port.outbound.PasswordHasher;
 import fr.monolith.domain.user.port.outbound.UserEventPublisher;
 import fr.monolith.domain.user.port.outbound.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +36,9 @@ class UserServiceTest {
     @Mock
     private UserEventPublisher userEventPublisher;
 
+    @Mock
+    private PasswordHasher passwordHasher;
+
     @InjectMocks
     private UserService userService;
 
@@ -41,7 +46,7 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        sampleUser = User.create("john@example.com", "John", "Doe");
+        sampleUser = User.create("john", "hash", Role.USER, "john@example.com", "John", "Doe");
     }
 
     @Nested
@@ -51,28 +56,54 @@ class UserServiceTest {
         @Test
         @DisplayName("doit créer et sauvegarder un utilisateur")
         void shouldCreateAndSaveUser() {
+            when(userRepository.existsByLogin("john")).thenReturn(false);
             when(userRepository.existsByEmail("john@example.com")).thenReturn(false);
-            when(userRepository.save(any(User.class))).thenReturn(sampleUser);
+            when(passwordHasher.hash("secret123")).thenReturn("hashed");
+            when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
             doNothing().when(userEventPublisher).publishUserCreated(any());
 
-            User result = userService.createUser("john@example.com", "John", "Doe");
+            User result = userService.createUser(" John ", "secret123", null, "john@example.com", "John", "Doe");
 
-            assertThat(result.getEmail()).isEqualTo("john@example.com");
+            assertThat(result.getLogin()).isEqualTo("john");
+            assertThat(result.getPassword()).isEqualTo("hashed");
+            assertThat(result.getRole()).isEqualTo(Role.USER);
             verify(userRepository).save(any(User.class));
-            verify(userEventPublisher).publishUserCreated(sampleUser);
+            verify(userEventPublisher).publishUserCreated(result);
         }
 
         @Test
         @DisplayName("doit lever UserAlreadyExistsException si email déjà utilisé")
         void shouldThrowIfEmailAlreadyExists() {
+            when(userRepository.existsByLogin("john")).thenReturn(false);
             when(userRepository.existsByEmail("john@example.com")).thenReturn(true);
 
-            assertThatThrownBy(() -> userService.createUser("john@example.com", "John", "Doe"))
+            assertThatThrownBy(() -> userService.createUser("john", "secret123", Role.USER, "john@example.com", "John", "Doe"))
                     .isInstanceOf(UserAlreadyExistsException.class)
                     .hasMessageContaining("john@example.com");
 
             verify(userRepository, never()).save(any());
             verify(userEventPublisher, never()).publishUserCreated(any());
+        }
+
+        @Test
+        @DisplayName("doit lever UserAlreadyExistsException si login déjà utilisé")
+        void shouldThrowIfLoginAlreadyExists() {
+            when(userRepository.existsByLogin("john")).thenReturn(true);
+
+            assertThatThrownBy(() -> userService.createUser("john", "secret123", Role.USER, "john@example.com", "John", "Doe"))
+                    .isInstanceOf(UserAlreadyExistsException.class)
+                    .hasMessageContaining("login");
+
+            verify(userRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("doit rejeter un mot de passe vide")
+        void shouldRejectBlankPassword() {
+            assertThatThrownBy(() -> userService.createUser("john", " ", Role.USER, "john@example.com", "John", "Doe"))
+                    .isInstanceOf(IllegalArgumentException.class);
+
+            verify(userRepository, never()).save(any());
         }
     }
 

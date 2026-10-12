@@ -45,3 +45,7 @@ fr.monolith.application.user
 ```bash
 mvn test -pl application
 ```
+
+## Sécurité (Spring Security)
+
+Ajout : UserService.createUser(login, rawPassword, role, ...) vérifie l'unicité login/email et hache via PasswordHasher ; UserResult expose login et ole (jamais le mot de passe).

@@ -1,5 +1,6 @@
 package fr.monolith.infrastructure.web.user.dto;
 
+import fr.monolith.domain.user.model.Role;
 import fr.monolith.domain.user.model.UserStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -20,6 +21,12 @@ public record UserResponse(
 
         @Schema(description = "Identifiant unique", example = "550e8400-e29b-41d4-a716-446655440000")
         UUID id,
+
+        @Schema(description = "Login", example = "john.doe")
+        String login,
+
+        @Schema(description = "Rôle")
+        Role role,
 
         @Schema(description = "Email", example = "john.doe@example.com")
         String email,

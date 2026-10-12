@@ -59,3 +59,7 @@ mvn test -pl infrastructure/web
 ## Ajouter un autre protocole
 
 GraphQL, gRPC… : créer un module `infra-<protocole>` qui appelle lui aussi `UserUseCase`.
+
+## Sécurité (Spring Security)
+
+Ajout : CreateUserRequest (login, password 8–72 car., role optionnel), UserResponse (login, role), OpenApiConfig (schéma Basic pour le bouton « Authorize » de Swagger).

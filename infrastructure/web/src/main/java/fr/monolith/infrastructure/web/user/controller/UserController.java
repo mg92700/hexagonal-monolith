@@ -48,11 +48,14 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Créer un utilisateur", description = "Crée un nouvel utilisateur avec statut PENDING")
+    @Operation(summary = "Créer un utilisateur", description = "Crée un utilisateur avec statut PENDING (rôle USER par défaut). Réservé aux ADMIN.")
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
-        log.info("POST /api/v1/users — email: {}", request.email());
+        log.info("POST /api/v1/users — login: {}", request.login());
 
         User created = userUseCase.createUser(
+                request.login(),
+                request.password(),
+                request.role(),
                 request.email(),
                 request.firstName(),
                 request.lastName()

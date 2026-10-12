@@ -165,4 +165,34 @@ class UserPersistenceAdapterTest {
             assertThat(result).hasSize(1).contains(sampleUser);
         }
     }
+
+    @Nested
+    @DisplayName("login")
+    class Login {
+
+        @Test
+        @DisplayName("findByLogin doit mapper l'entité trouvée")
+        void shouldFindByLogin() {
+            when(jpaRepository.findByLogin("john")).thenReturn(Optional.of(sampleEntity));
+            when(mapper.toDomain(sampleEntity)).thenReturn(sampleUser);
+
+            assertThat(adapter.findByLogin("john")).contains(sampleUser);
+        }
+
+        @Test
+        @DisplayName("findByLogin doit retourner vide si inconnu")
+        void shouldReturnEmptyIfUnknownLogin() {
+            when(jpaRepository.findByLogin("nobody")).thenReturn(Optional.empty());
+
+            assertThat(adapter.findByLogin("nobody")).isEmpty();
+        }
+
+        @Test
+        @DisplayName("existsByLogin doit déléguer au repository")
+        void shouldDelegateExistsByLogin() {
+            when(jpaRepository.existsByLogin("john")).thenReturn(true);
+
+            assertThat(adapter.existsByLogin("john")).isTrue();
+        }
+    }
 }

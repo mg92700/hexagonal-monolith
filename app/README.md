@@ -49,3 +49,7 @@ L'application nécessite PostgreSQL. Kafka n'est contacté qu'à la publication 
 - Désactiver Swagger : `springdoc.api-docs.enabled=false`, `springdoc.swagger-ui.enabled=false`.
 - Restreindre les endpoints Actuator (`env` en particulier).
 - Remplacer `ddl-auto: update` par des migrations versionnées.
+
+## Sécurité (Spring Security)
+
+Ajout : dépendance infra-security et propriétés pp.security.admin.* (admin initial).

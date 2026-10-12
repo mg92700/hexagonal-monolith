@@ -4,6 +4,7 @@ import fr.monolith.infrastructure.persistence.user.entity.UserJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -18,4 +19,8 @@ import java.util.UUID;
 public interface UserJpaRepository extends JpaRepository<UserJpaEntity, UUID> {
 
     boolean existsByEmailIgnoreCase(String email);
+
+    Optional<UserJpaEntity> findByLogin(String login);
+
+    boolean existsByLogin(String login);
 }

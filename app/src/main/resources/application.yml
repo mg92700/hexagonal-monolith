@@ -59,3 +59,12 @@ logging:
     org.hibernate.SQL: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# -- Sécurité ------------------------------------------------
+# Admin créé au démarrage s'il n'existe pas. CHANGER le mot de passe en production.
+app:
+  security:
+    admin:
+      login: ${ADMIN_LOGIN:admin}
+      password: ${ADMIN_PASSWORD:admin}
+      email: ${ADMIN_EMAIL:admin@monolith.local}

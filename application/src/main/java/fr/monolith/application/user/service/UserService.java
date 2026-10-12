@@ -2,8 +2,10 @@ package fr.monolith.application.user.service;
 
 import fr.monolith.domain.user.exception.UserAlreadyExistsException;
 import fr.monolith.domain.user.exception.UserNotFoundException;
+import fr.monolith.domain.user.model.Role;
 import fr.monolith.domain.user.model.User;
 import fr.monolith.domain.user.port.inbound.UserUseCase;
+import fr.monolith.domain.user.port.outbound.PasswordHasher;
 import fr.monolith.domain.user.port.outbound.UserEventPublisher;
 import fr.monolith.domain.user.port.outbound.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,23 +38,33 @@ public class UserService implements UserUseCase {
 
     private final UserRepository userRepository;
     private final UserEventPublisher userEventPublisher;
+    private final PasswordHasher passwordHasher;
 
     // ── Implémentation UserUseCase ─────────────────────────
 
     @Override
     @Transactional
-    public User createUser(String email, String firstName, String lastName) {
+    public User createUser(String login, String rawPassword, Role role,
+                           String email, String firstName, String lastName) {
+        String normalizedLogin = User.normalizeLogin(login);
         String normalizedEmail = normalizeEmail(email);
         String normalizedFirstName = normalizeName(firstName, "First name");
         String normalizedLastName = normalizeName(lastName, "Last name");
-
-        log.info("Creating user with email: {}", normalizedEmail);
-
-        if (userRepository.existsByEmail(normalizedEmail)) {
-            throw new UserAlreadyExistsException(normalizedEmail);
+        if (rawPassword == null || rawPassword.isBlank()) {
+            throw new IllegalArgumentException("Password is required");
         }
 
-        User user = User.create(normalizedEmail, normalizedFirstName, normalizedLastName);
+        log.info("Creating user with login: {}", normalizedLogin);
+
+        if (userRepository.existsByLogin(normalizedLogin)) {
+            throw UserAlreadyExistsException.withLogin(normalizedLogin);
+        }
+        if (userRepository.existsByEmail(normalizedEmail)) {
+            throw UserAlreadyExistsException.withEmail(normalizedEmail);
+        }
+
+        User user = User.create(normalizedLogin, passwordHasher.hash(rawPassword), role,
+                normalizedEmail, normalizedFirstName, normalizedLastName);
         User saved = userRepository.save(user);
 
         userEventPublisher.publishUserCreated(saved);

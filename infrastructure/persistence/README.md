@@ -55,3 +55,7 @@ mvn test -pl infrastructure/persistence
 
 Créer un module `infra-<techno>` (ex. `infra-mongodb`) qui implémente `UserRepository`, et le substituer à
 celui-ci dans `app/pom.xml`. Le domaine et l'application ne changent pas.
+
+## Sécurité (Spring Security)
+
+Ajout : colonnes login (unique), password (hash), ole sur users ; indByLogin / existsByLogin.

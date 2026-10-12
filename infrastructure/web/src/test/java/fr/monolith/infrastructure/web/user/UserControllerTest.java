@@ -2,7 +2,9 @@ package fr.monolith.infrastructure.web.user;
 
 import fr.monolith.application.user.dto.UserResult;
 import fr.monolith.application.user.mapper.UserApplicationMapper;
+import fr.monolith.domain.user.exception.UserAlreadyExistsException;
 import fr.monolith.domain.user.exception.UserNotFoundException;
+import fr.monolith.domain.user.model.Role;
 import fr.monolith.domain.user.model.User;
 import fr.monolith.domain.user.model.UserStatus;
 import fr.monolith.domain.user.port.inbound.UserUseCase;
@@ -65,6 +67,8 @@ class UserControllerTest {
 
         sampleUser = User.builder()
                 .id(id)
+                .login("john")
+                .role(Role.USER)
                 .email("john@example.com")
                 .firstName("John")
                 .lastName("Doe")
@@ -73,10 +77,10 @@ class UserControllerTest {
                 .updatedAt(now)
                 .build();
 
-        sampleResult = new UserResult(id, "john@example.com", "John", "Doe",
+        sampleResult = new UserResult(id, "john", Role.USER, "john@example.com", "John", "Doe",
                 "John Doe", UserStatus.PENDING, now, now);
 
-        sampleResponse = new UserResponse(id, "john@example.com", "John", "Doe",
+        sampleResponse = new UserResponse(id, "john", Role.USER, "john@example.com", "John", "Doe",
                 "John Doe", UserStatus.PENDING, now, now);
     }
 
@@ -88,10 +92,10 @@ class UserControllerTest {
         @DisplayName("doit créer un utilisateur et retourner 201")
         void shouldCreateUserAndReturn201() throws Exception {
             CreateUserRequest request = new CreateUserRequest(
-                    "john@example.com", "John", "Doe"
+                    "john", "S3cretPassw0rd", Role.ADMIN, "john@example.com", "John", "Doe"
             );
 
-            when(userUseCase.createUser(anyString(), anyString(), anyString()))
+            when(userUseCase.createUser(eq("john"), eq("S3cretPassw0rd"), eq(Role.ADMIN), anyString(), anyString(), anyString()))
                     .thenReturn(sampleUser);
             when(applicationMapper.toResult(sampleUser)).thenReturn(sampleResult);
             when(webMapper.toResponse(sampleResult)).thenReturn(sampleResponse);
@@ -101,6 +105,9 @@ class UserControllerTest {
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.email").value("john@example.com"))
+                    .andExpect(jsonPath("$.login").value("john"))
+                    .andExpect(jsonPath("$.role").value("USER"))
+                    .andExpect(jsonPath("$.password").doesNotExist())
                     .andExpect(jsonPath("$.firstName").value("John"))
                     .andExpect(jsonPath("$.status").value("PENDING"));
         }
@@ -108,7 +115,7 @@ class UserControllerTest {
         @Test
         @DisplayName("doit retourner 400 si l'email est invalide")
         void shouldReturn400IfEmailInvalid() throws Exception {
-            CreateUserRequest request = new CreateUserRequest("not-an-email", "John", "Doe");
+            CreateUserRequest request = new CreateUserRequest("john", "S3cretPassw0rd", null, "not-an-email", "John", "Doe");
 
             mockMvc.perform(post("/api/v1/users")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -119,12 +126,37 @@ class UserControllerTest {
         @Test
         @DisplayName("doit retourner 400 si le prénom est vide")
         void shouldReturn400IfFirstNameBlank() throws Exception {
-            CreateUserRequest request = new CreateUserRequest("john@example.com", "", "Doe");
+            CreateUserRequest request = new CreateUserRequest("john", "S3cretPassw0rd", null, "john@example.com", "", "Doe");
 
             mockMvc.perform(post("/api/v1/users")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("doit retourner 400 si le mot de passe est trop court")
+        void shouldReturn400IfPasswordTooShort() throws Exception {
+            CreateUserRequest request = new CreateUserRequest("john", "short", null, "john@example.com", "John", "Doe");
+
+            mockMvc.perform(post("/api/v1/users")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("doit retourner 409 si le login existe déjà")
+        void shouldReturn409IfLoginExists() throws Exception {
+            CreateUserRequest request = new CreateUserRequest("john", "S3cretPassw0rd", null, "john@example.com", "John", "Doe");
+            when(userUseCase.createUser(any(), any(), any(), any(), any(), any()))
+                    .thenThrow(UserAlreadyExistsException.withLogin("john"));
+
+            mockMvc.perform(post("/api/v1/users")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isConflict())
+                    .andExpect(jsonPath("$.field").value("login"));
         }
     }
 

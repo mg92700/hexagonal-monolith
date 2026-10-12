@@ -55,7 +55,7 @@ public class GlobalExceptionHandler {
         problem.setTitle("User Already Exists");
         problem.setType(URI.create("/errors/user-already-exists"));
         problem.setProperty("timestamp", Instant.now());
-        problem.setProperty("email", ex.getEmail());
+        problem.setProperty("field", ex.getField());
         return problem;
     }
 

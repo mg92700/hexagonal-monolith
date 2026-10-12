@@ -2,6 +2,7 @@ package fr.monolith.application.user;
 
 import fr.monolith.application.user.dto.UserResult;
 import fr.monolith.application.user.mapper.UserApplicationMapper;
+import fr.monolith.domain.user.model.Role;
 import fr.monolith.domain.user.model.User;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -16,12 +17,14 @@ class UserApplicationMapperTest {
 
     @Test
     void shouldMapUserToResult() {
-        User user = User.create("john@example.com", "John", "Doe");
+        User user = User.create("john", "hash", Role.USER, "john@example.com", "John", "Doe");
 
         UserResult result = mapper.toResult(user);
 
         assertThat(result.id()).isEqualTo(user.getId());
         assertThat(result.email()).isEqualTo(user.getEmail());
+        assertThat(result.login()).isEqualTo("john");
+        assertThat(result.role()).isEqualTo(Role.USER);
         assertThat(result.fullName()).isEqualTo("John Doe");
         assertThat(result.status()).isEqualTo(user.getStatus());
         assertThat(result.createdAt()).isEqualTo(user.getCreatedAt());
@@ -30,7 +33,7 @@ class UserApplicationMapperTest {
 
     @Test
     void shouldMapUserListToResults() {
-        User user = User.create("john@example.com", "John", "Doe");
+        User user = User.create("john", "hash", Role.USER, "john@example.com", "John", "Doe");
 
         assertThat(mapper.toResultList(List.of(user)))
                 .singleElement()

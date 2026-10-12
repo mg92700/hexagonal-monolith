@@ -1,18 +1,32 @@
 package fr.monolith.domain.user.exception;
 
 /**
- * Exception métier — email déjà utilisé.
+ * Exception métier — une valeur unique (email, login) est déjà utilisée.
  */
 public class UserAlreadyExistsException extends RuntimeException {
 
-    private final String email;
+    private final String field;
+    private final String value;
 
-    public UserAlreadyExistsException(String email) {
-        super("User already exists with email: " + email);
-        this.email = email;
+    public UserAlreadyExistsException(String field, String value) {
+        super("User already exists with " + field + ": " + value);
+        this.field = field;
+        this.value = value;
     }
 
-    public String getEmail() {
-        return email;
+    public static UserAlreadyExistsException withEmail(String email) {
+        return new UserAlreadyExistsException("email", email);
+    }
+
+    public static UserAlreadyExistsException withLogin(String login) {
+        return new UserAlreadyExistsException("login", login);
+    }
+
+    public String getField() {
+        return field;
+    }
+
+    public String getValue() {
+        return value;
     }
 }
