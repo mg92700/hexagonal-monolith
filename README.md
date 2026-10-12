@@ -18,7 +18,7 @@ Chaque module a sa propre documentation (rôle, responsabilités, interdits) :
 | `infrastructure/persistence` | `infra-persistence` | Adaptateur sortant JPA/PostgreSQL | [README](infrastructure/persistence/README.md) |
 | `infrastructure/web` | `infra-web` | Adaptateur entrant REST + Swagger | [README](infrastructure/web/README.md) |
 | `infrastructure/stream` | `infra-stream` | Adaptateur sortant Kafka (events) | [README](infrastructure/stream/README.md) |
-| `infrastructure/security` | `infra-security` | Spring Security : Basic auth, rôles, BCrypt, admin initial | [README](infrastructure/security/README.md) |
+| `infrastructure/security` | `infra-security` | Spring Security : login JWT, rôles, BCrypt, admin initial | [README](infrastructure/security/README.md) |
 | `app` | `app` | Point d'entrée Spring Boot, configuration | [app/README.md](app/README.md) |
 
 Historique de la migration Spring Boot 4 et du nettoyage : [docs/MIGRATION-SPRING-BOOT-4.md](docs/MIGRATION-SPRING-BOOT-4.md).
@@ -126,7 +126,13 @@ mvn clean verify              # build complet + JaCoCo (couverture minimale : 20
 
 ## Sécurité
 
-- Authentification **HTTP Basic** (stateless) sur toute l'API **et sur Swagger** (`/swagger-ui.html`, `/api-docs`) ; bouton « Authorize » dans Swagger UI.
+- Authentification par **JWT** (HS256, stateless) :
+  1. `POST /api/v1/auth/login` avec `{"login":"admin","password":"admin"}` → `{"accessToken":"...","tokenType":"Bearer","expiresIn":3600}` ;
+  2. envoyer `Authorization: Bearer <accessToken>` sur chaque appel ;
+  3. `401` si token absent, invalide ou expiré ; HTTP Basic n'est plus accepté.
+- **Swagger** : la page `/swagger-ui.html` et `/api-docs` sont publiques (un navigateur ne peut pas envoyer de header). Appelez `POST /api/v1/auth/login`, copiez `accessToken`, cliquez sur **Authorize** et collez-le (sans « Bearer ») : « Try it out » envoie alors le token.
+- Exemple curl : `curl -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/v1/users`
+- Configuration : `JWT_SECRET` (32 octets minimum, **à changer en production**) et `JWT_EXPIRATION` (durée ISO-8601, défaut `PT1H`). Un token reste valide jusqu'à son expiration, même si le compte est désactivé entre-temps.
 - `User` possède `login` (unique, insensible à la casse), `password` (hash BCrypt en BDD, jamais renvoyé) et `role` (`USER` par défaut, `ADMIN`).
 - Autorisations : `GET /api/v1/users/**` = tout utilisateur authentifié ; création / activation / désactivation / suppression = `ADMIN` ; `/actuator/health` public, autres endpoints actuator = `ADMIN`.
 - Seuls les comptes au statut `ACTIVE` peuvent se connecter : un nouvel utilisateur est `PENDING` jusqu'à ce qu'un admin appelle `PUT /api/v1/users/{id}/activate`.

@@ -62,4 +62,4 @@ GraphQL, gRPC… : créer un module `infra-<protocole>` qui appelle lui aussi `U
 
 ## Sécurité (Spring Security)
 
-Ajout : CreateUserRequest (login, password 8–72 car., role optionnel), UserResponse (login, role), OpenApiConfig (schéma Basic pour le bouton « Authorize » de Swagger).
+Ajout : CreateUserRequest (login, password 8–72 car., role optionnel), UserResponse (login, role), OpenApiConfig (schéma Bearer JWT pour le bouton « Authorize » de Swagger).

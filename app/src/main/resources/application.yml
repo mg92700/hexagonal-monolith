@@ -68,3 +68,7 @@ app:
       login: ${ADMIN_LOGIN:admin}
       password: ${ADMIN_PASSWORD:admin}
       email: ${ADMIN_EMAIL:admin@monolith.local}
+  # JWT HS256 : secret de 32 octets minimum. CHANGER en production (variable JWT_SECRET).
+  security.jwt:
+    secret: ${JWT_SECRET:dev-only-secret-change-me-in-production-0123456789}
+    expiration: ${JWT_EXPIRATION:PT1H}
