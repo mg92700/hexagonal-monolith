@@ -63,4 +63,4 @@ mvn test -pl domain
 
 ## Sécurité (Spring Security)
 
-Ajout : enum Role, champs login/password (hash)/ole sur User, port sortant PasswordHasher, UserRepository.findByLogin/existsByLogin, UserAlreadyExistsException générique (champ + valeur).
+Ajout : enum `Role` (USER par défaut, ADMIN), champs `login` / `password` (hash) / `role` sur `User`, port sortant `PasswordHasher`, `UserRepository.findByLogin` / `existsByLogin`, `UserAlreadyExistsException` générique (champ + valeur).

@@ -58,4 +58,4 @@ celui-ci dans `app/pom.xml`. Le domaine et l'application ne changent pas.
 
 ## Sécurité (Spring Security)
 
-Ajout : colonnes login (unique), password (hash), ole sur users ; indByLogin / existsByLogin.
+Ajout : colonnes `login` (unique), `password` (hash) et `role` sur `users` ; `findByLogin` / `existsByLogin`.
