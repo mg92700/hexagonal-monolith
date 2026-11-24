@@ -54,7 +54,7 @@
         <springdoc.version>3.2.1</springdoc.version>
 
         <!-- Tests -->
-        <jacoco.version>0.8.12</jacoco.version>
+        <jacoco.version>0.8.16</jacoco.version>
         <jacoco.minimum.coverage>0.20</jacoco.minimum.coverage>
     </properties>
 
