@@ -51,7 +51,7 @@
 
         <!-- Dépendances tierces (Lombok est géré par le parent Spring Boot) -->
         <mapstruct.version>1.6.3</mapstruct.version>
-        <springdoc.version>3.1.1</springdoc.version>
+        <springdoc.version>3.2.1</springdoc.version>
 
         <!-- Tests -->
         <jacoco.version>0.8.12</jacoco.version>
