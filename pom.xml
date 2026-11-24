@@ -10,7 +10,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.1.1</version>
+        <version>4.2.0</version>
         <relativePath/>
     </parent>
 
@@ -51,7 +51,7 @@
 
         <!-- Dépendances tierces (Lombok est géré par le parent Spring Boot) -->
         <mapstruct.version>1.6.3</mapstruct.version>
-        <springdoc.version>3.1.1</springdoc.version>
+        <springdoc.version>3.2.1</springdoc.version>
 
         <!-- Tests -->
         <jacoco.version>0.8.12</jacoco.version>
