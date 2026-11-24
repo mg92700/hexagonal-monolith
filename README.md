@@ -3,7 +3,7 @@
 Monolithe modulaire Maven en **architecture hexagonale** (ports & adapters), prêt à évoluer
 vers un découpage en microservices.
 
-**Stack** : Java 21 · Spring Boot 4.1 · Spring Data JPA/Hibernate 7 · PostgreSQL · Kafka · MapStruct · springdoc-openapi 3.
+**Stack** : Java 21 · Spring Boot 4.2 · Spring Data JPA/Hibernate 7 · PostgreSQL · Kafka · MapStruct · springdoc-openapi 3.
 
 ---
 
